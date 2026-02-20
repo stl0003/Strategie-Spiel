@@ -3,6 +3,9 @@
         this.tiles = [];
         this.units = [];
         this.buildings = [];
+        this.items = []
+        this.particles = [];
+        this.floatingTexts = [];
         this.selectedUnit = null;
         this.listeners = [];
     }

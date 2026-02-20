@@ -9,3 +9,9 @@
         this.explored = false;
     }
 }
+export class Tile {
+    constructor(x, y, terrainKey, image) {
+        // ... bestehende Eigenschaften
+        this.hasTrap = false;   // neu
+    }
+}

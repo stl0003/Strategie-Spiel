@@ -9,6 +9,11 @@
         this.speed = 2;
         this.onChange = null;
         this.playerIndex = -1;
+        this.nameKey = nameKey || colorKey;
+        this.hp = 100;
+        this.maxHp = 100;
+        this.activeAction = null;
+        this.playerIndex = -1;
     }
 
     moveTo(newGridX, newGridY) {

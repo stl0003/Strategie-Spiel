@@ -1,24 +1,317 @@
+/* ---------- Grundlegende Layouts ---------- */
 #myGameArea {
     border: 1px solid #d3d3d3;
     background-color: #f1f1f1;
+    box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+    z-index: 10;
 }
 
-#myGameArea2 {
+/* Rechtes und linkes Panel */
+.sidePanel {
+    width: 300px;
+    height: 600px; /* Gleiche Höhe wie Canvas */
     border: 1px solid #d3d3d3;
     background-color: #f1f1f1;
+    box-sizing: border-box;
+    padding: 12px;
+    font-family: "Helvetica", Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+}
+
+/* Speziell für das linke Panel (optional) */
+#myGameArea3.sidePanel {
+    background-color: #e8e8e8;
 }
 
 .content {
     display: flex;
     justify-content: center;
-    align-items: center;
-    height: 100vh;
+    align-items: flex-start;
+    height: 90vh;
+    gap: 20px;
 }
 
+/* ---------- Lobby-Stile ---------- */
+#lobby-screen {
+    text-align: center;
+    margin-top: 50px;
+}
+
+#host-mode, #join-mode {
+    margin: 20px;
+}
+
+#join-mode {
+    border-top: 1px solid #ccc;
+    padding-top: 20px;
+}
+
+#server-ip, #player-name {
+    width: 250px;
+    padding: 5px;
+    margin: 5px;
+}
+
+.hint {
+    color: #666;
+    font-size: 0.9em;
+}
+
+#lobby-info {
+    margin-top: 30px;
+}
+
+#player-list {
+    list-style: none;
+    padding: 0;
+}
+
+    #player-list li {
+        margin: 5px 0;
+        padding: 5px;
+        background: #e3e3e3;
+        border-radius: 4px;
+    }
+
+/* ---------- Menüleiste ---------- */
 #menu {
     display: flex;
     justify-content: space-between;
     padding: 10px;
     background-color: #333;
     color: white;
+    margin-bottom: 10px;
 }
+
+/* ---------- Panelsektionen ---------- */
+.panelSection {
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.6);
+    border-radius: 4px;
+}
+
+.panelTitle {
+    font-weight: 700;
+    font-size: 16px;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #aaa;
+    padding-bottom: 3px;
+}
+
+.panelRow {
+    font-size: 12px;
+    margin: 4px 0;
+}
+
+.panelLabel {
+    display: inline-block;
+    width: 18px;
+    font-weight: 700;
+}
+
+.panelMuted {
+    opacity: 0.65;
+    font-style: italic;
+}
+
+/* ---------- Buttongruppe ---------- */
+.buttonGroup {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: flex-start;
+}
+
+.menuButtons {
+    border-radius: 1em;
+    padding: 0.6em 1em;
+    font-size: 0.75em;
+    cursor: pointer;
+    background: #f0f0f0;
+    border: 1px solid #999;
+    transition: all 0.2s;
+}
+
+    .menuButtons:hover {
+        background: #d0d0d0;
+        transform: scale(1.02);
+    }
+
+/* ---------- Kontextmenü (Rechtsklick) ---------- */
+#contextMenu {
+    display: none;
+    position: absolute;
+    background: #454545;
+    color: white;
+    border: 2px solid #a10000;
+    cursor: pointer;
+    z-index: 100;
+    box-shadow: 3px 3px 5px rgba(0,0,0,0.5);
+    min-width: 120px;
+}
+
+    #contextMenu div {
+        padding: 4px 8px;
+        border-bottom: 1px solid #666;
+    }
+
+        #contextMenu div:hover {
+            background: #666;
+        }
+
+/* ---------- jQuery UI Dialoge (angepasst) ---------- */
+.ui-dialog {
+    border: none !important;
+    border-radius: 12px !important;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3) !important;
+    padding: 0 !important;
+    overflow: hidden;
+    background: #ffffff !important;
+    font-family: "Segoe UI", Roboto, sans-serif;
+}
+
+.ui-dialog-titlebar {
+    background: #2c3e50 !important;
+    color: white !important;
+    border: none !important;
+    border-radius: 0 !important;
+    padding: 15px 20px !important;
+}
+
+.ui-dialog-title {
+    font-weight: 600 !important;
+    font-size: 1.1rem;
+}
+
+.ui-dialog-titlebar-close {
+    background: transparent !important;
+    border: none !important;
+    right: 15px !important;
+}
+
+    .ui-dialog-titlebar-close:hover {
+        background: rgba(255, 255, 255, 0.2) !important;
+    }
+
+.ui-dialog-content {
+    padding: 25px !important;
+    font-size: 1rem;
+    color: #333;
+    line-height: 1.6;
+}
+
+    /* Dialog-Buttons */
+    .ui-dialog-content button {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background: #f8f9fa;
+        cursor: pointer;
+        transition: all 0.2s;
+        font-size: 0.95rem;
+        text-align: left;
+    }
+
+        .ui-dialog-content button:hover {
+            background: #e9ecef;
+            border-color: #3498db;
+            color: #3498db;
+            transform: translateY(-1px);
+        }
+
+textarea, select {
+    width: 100%;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-family: inherit;
+}
+
+#multipleChoiceDialog label {
+    display: block;
+    background: #fdfdfd;
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-bottom: 5px;
+    border: 1px solid #eee;
+}
+
+/* Overlay (Hintergrund) */
+.ui-widget-overlay {
+    background: #000000 !important;
+    opacity: 0.5 !important;
+}
+
+/* ---------- Drag & Drop Stile ---------- */
+.drop-sentence {
+    line-height: 2.5;
+    font-size: 1.2rem;
+    margin-bottom: 30px;
+}
+
+.droppable {
+    display: inline-block;
+    width: 100px;
+    height: 30px;
+    border-bottom: 2px dashed #3498db;
+    background: #ecf0f1;
+    margin: 0 5px;
+    vertical-align: middle;
+    border-radius: 4px;
+    transition: background 0.3s;
+}
+
+    .droppable.ui-droppable-hover {
+        background: #d4e6f1;
+        border-color: #2980b9;
+    }
+
+    .droppable.ui-state-highlight {
+        background: #2ecc71;
+        border-style: solid;
+        color: white;
+    }
+
+.draggable {
+    display: inline-block;
+    padding: 8px 15px;
+    background: #34495e;
+    color: white;
+    border-radius: 6px;
+    cursor: grab;
+    margin-right: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-weight: bold;
+    user-select: none;
+}
+
+    .draggable:active {
+        cursor: grabbing;
+    }
+
+    .draggable.ui-draggable-dragging {
+        opacity: 0.8;
+        z-index: 1000;
+    }
+
+/* ---------- Hilfsklassen ---------- */
+.btn-primary {
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+    .btn-primary:hover {
+        background: #0056b3;
+    }

@@ -10,12 +10,13 @@ export class MainCanvasView extends BaseView {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
+        // ---------- TILES ----------
         this.model.tiles.forEach(tile => {
             if (!tile.explored) {
                 this.ctx.fillStyle = '#222';
                 this.ctx.fillRect(tile.x, tile.y, 30, 30);
             } else {
-                // Hintergrundfarbe (falls Bild fehlt oder transparent)
+                // Hintergrundfarbe
                 let baseColor;
                 switch (tile.terrainKey) {
                     case 'PLAINS': baseColor = '#90EE90'; break;
@@ -28,7 +29,6 @@ export class MainCanvasView extends BaseView {
                 this.ctx.fillStyle = baseColor;
                 this.ctx.fillRect(tile.x, tile.y, 30, 30);
 
-                // Bild zeichnen, wenn vorhanden und geladen
                 if (tile.image && tile.image.naturalWidth > 0) {
                     this.ctx.drawImage(tile.image, tile.x, tile.y, 30, 30);
                 }
@@ -38,6 +38,52 @@ export class MainCanvasView extends BaseView {
             }
         });
 
+        // ---------- NEU: ITEMS ----------
+        this.model.items.forEach(item => {
+            const tile = this.model.tiles[item.gridY]?.[item.gridX];
+            if (tile && tile.explored) {
+                // Schwebeeffekt
+                const bob = Math.sin(Date.now() / 300 + item.bobOffset) * 3;
+                const drawX = item.x + 5;
+                const drawY = item.y + 5 + bob;
+                const size = 20;
+
+                if (item.image && item.image.naturalWidth > 0) {
+                    this.ctx.drawImage(item.image, drawX, drawY, size, size);
+                } else {
+                    this.ctx.fillStyle = 'magenta';
+                    this.ctx.fillRect(drawX, drawY, size, size);
+                }
+
+                // Schatten
+                this.ctx.fillStyle = 'rgba(0,0,0,0.2)';
+                this.ctx.beginPath();
+                this.ctx.ellipse(item.x + 15, item.y + 25, 8, 3, 0, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
+        });
+
+        // ---------- NEU: PARTIKEL ----------
+        this.model.particles.forEach(p => {
+            this.ctx.globalAlpha = p.alpha;
+            this.ctx.fillStyle = p.color;
+            this.ctx.beginPath();
+            this.ctx.arc(p.x, p.y, 3, 0, Math.PI * 2);
+            this.ctx.fill();
+        });
+        this.ctx.globalAlpha = 1.0;
+
+        // ---------- NEU: FLOATING TEXTS ----------
+        this.model.floatingTexts.forEach(ft => {
+            this.ctx.globalAlpha = ft.alpha;
+            this.ctx.fillStyle = ft.color;
+            this.ctx.font = "bold 18px Arial";
+            this.ctx.textAlign = "center";
+            this.ctx.fillText(ft.text, ft.x, ft.y);
+        });
+        this.ctx.globalAlpha = 1.0;
+
+        // ---------- BUILDINGS ----------
         this.model.buildings.forEach(building => {
             if (building.image && building.image.naturalWidth > 0) {
                 this.ctx.drawImage(building.image, building.x + 5, building.y + 5, 20, 20);
@@ -47,6 +93,7 @@ export class MainCanvasView extends BaseView {
             }
         });
 
+        // ---------- UNITS ----------
         this.model.units.forEach(unit => {
             if (unit.image && unit.image.naturalWidth > 0) {
                 this.ctx.drawImage(unit.image, unit.x + 5, unit.y + 5, 20, 20);
@@ -57,6 +104,7 @@ export class MainCanvasView extends BaseView {
                 this.ctx.fill();
             }
 
+            // Auswahlmarkierung
             if (this.model.selectedUnit === unit) {
                 this.ctx.beginPath();
                 this.ctx.arc(unit.x + 15, unit.y + 15, 13, 0, 2 * Math.PI);
@@ -64,6 +112,16 @@ export class MainCanvasView extends BaseView {
                 this.ctx.lineWidth = 2;
                 this.ctx.stroke();
             }
+
+            // Gesundheitsbalken (optional, wie in Ihrer alten Unit.update)
+            const barWidth = 20;
+            const barHeight = 4;
+            const barX = unit.x + 5;
+            const barY = unit.y - 6;
+            this.ctx.fillStyle = 'red';
+            this.ctx.fillRect(barX, barY, barWidth, barHeight);
+            this.ctx.fillStyle = '#0f0';
+            this.ctx.fillRect(barX, barY, barWidth * (unit.hp / unit.maxHp), barHeight);
         });
     }
 }

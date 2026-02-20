@@ -4,37 +4,44 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Strategie Spiel - Multiplayer</title>
-    <link rel="stylesheet" href="css/site.css"> <!-- Hier anpassen: site.css statt style.css -->
+    <link rel="stylesheet" href="css/site.css">
+    <!-- jQuery & jQuery UI für Dialoge (optional, aber im Script vorhanden) -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.14.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://code.jquery.com/ui/1.14.2/jquery-ui.js"></script>
+    <!-- SignalR für Multiplayer -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/8.0.7/signalr.min.js"></script>
+    <!-- Hauptmodul -->
     <script src="js/main.js" type="module"></script>
 </head>
 <body>
-    <!-- Lobby-Bildschirm -->
-    <div id="lobby-screen" style="text-align: center; margin-top: 50px;">
+    <!-- LOBBY-BILDSCHIRM (anfangs sichtbar) -->
+    <div id="lobby-screen">
         <h1>Strategie Spiel - Lobby</h1>
 
-        <div id="host-mode" style="margin: 20px;">
+        <div id="host-mode">
             <h3>Als Host starten</h3>
             <button id="host-game-btn">Spiel hosten</button>
-            <p style="color: #666; font-size: 0.9em;">(Startet Verbindung zu localhost)</p>
+            <p class="hint">(Startet Verbindung zu localhost)</p>
         </div>
 
-        <div id="join-mode" style="margin: 20px; border-top: 1px solid #ccc; padding-top: 20px;">
+        <div id="join-mode">
             <h3>Spiel beitreten</h3>
-            <input type="text" id="server-ip" placeholder="Server-IP eingeben (z.B. 192.168.1.100)" style="width: 250px; padding: 5px;">
-            <input type="text" id="player-name" placeholder="Dein Name" style="width: 200px; padding: 5px; margin-left: 10px;">
+            <input type="text" id="server-ip" placeholder="Server-IP eingeben (z.B. 192.168.1.100)">
+            <input type="text" id="player-name" placeholder="Dein Name">
             <button id="join-game-btn">Beitreten</button>
         </div>
 
-        <div id="lobby-info" style="display: none; margin-top: 30px;">
+        <div id="lobby-info" style="display: none;">
             <h2>Spieler in der Lobby:</h2>
             <ul id="player-list"></ul>
             <p id="waiting-message">Warte auf weitere Spieler... (Noch <span id="players-needed">4</span> benötigt)</p>
         </div>
     </div>
 
-    <!-- Spiel-Bildschirm -->
+    <!-- SPIEL-BILDSCHIRM (anfangs versteckt) -->
     <div id="game-screen" style="display: none;">
+        <!-- Obere Menüleiste -->
         <div id="menu">
             <div class="left_menu">
                 <button id="btn_build">Build</button>
@@ -43,9 +50,118 @@
                 <span>Gold: 100 | Year: Autumn 1614</span>
             </div>
         </div>
+
+        <!-- Hauptbereich mit Canvas und Seitenpanels -->
         <div class="content">
+            <!-- Linkes Panel (optional, hier Platzhalter) -->
+            <div id="myGameArea3" class="sidePanel">
+                <div class="panelSection">
+                    <div class="panelTitle">Placeholder</div>
+                </div>
+            </div>
+
+            <!-- Spielfeld -->
             <canvas id="myGameArea" width="600" height="600"></canvas>
-            <canvas id="myGameArea2" width="300" height="600"></canvas>
+
+            <!-- Rechtes Panel (Info & Steuerung) -->
+            <div id="myGameArea2" class="sidePanel">
+                <div class="panelSection">
+                    <div class="panelTitle">Coords</div>
+                    <div class="panelRow"><span class="panelLabel">Y:</span> <span id="ui_coord_y">-</span></div>
+                    <div class="panelRow"><span class="panelLabel">X:</span> <span id="ui_coord_x">-</span></div>
+                </div>
+
+                <div class="panelSection">
+                    <div class="panelTitle">Unit</div>
+                    <div class="panelRow"><span id="ui_unit">-</span></div>
+                </div>
+
+                <div class="panelSection">
+                    <div class="panelTitle">Action</div>
+                    <div class="panelRow"><span id="ui_action">-</span></div>
+                </div>
+
+                <div class="panelSection">
+                    <div class="panelTitle">Controls</div>
+                    <div class="buttonGroup">
+                        <button id="ui_btn_move" class="menuButtons">Move</button>
+                        <button id="ui_btn_build" class="menuButtons">Build</button>
+                        <button id="ui_btn_fight" class="menuButtons">Fight</button>
+                        <button id="ui_btn_test" class="menuButtons">Test</button>
+                        <button id="ui_btn_singleChoice" class="menuButtons">Single Choice</button>
+                        <button id="ui_btn_multipleChoice" class="menuButtons">Multiple Choice</button>
+                        <button id="ui_btn_dropDown" class="menuButtons">Dropdown</button>
+                        <button id="ui_btn_dragDrop" class="menuButtons">Drag Drop</button>
+                        <button id="ui_btn_freeText" class="menuButtons">Free Text</button>
+                        <button id="ui_btn_rateQuestion" class="menuButtons">Rate Question</button>
+                    </div>
+                </div>
+
+                <div class="panelSection">
+                    <div class="panelTitle">Inventory</div>
+                    <div class="panelRow panelMuted">coming soon…</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Kontextmenü (Rechtsklick-Menü) -->
+        <div id="contextMenu"></div>
+
+        <!-- Dialog-Container für verschiedene Fragetypen (werden per jQuery-UI eingeblendet) -->
+        <div id="singleChoiceDialog" title="Single Choice" style="display: none;">
+            <p>Wofür steht HTML?</p>
+            <button class="answer-btn">Hyper Text Markup Language</button>
+            <button class="answer-btn">Home Tool Markup Language</button>
+            <button class="answer-btn">Hyperlinks and Text Markup Language</button>
+            <button class="answer-btn">Hyper Tool Markup Language</button>
+        </div>
+
+        <div id="multipleChoiceDialog" title="Multiple Choice" style="display: none;">
+            <p>Welche der folgenden Sprachen sind Programmiersprachen?</p>
+            <label><input type="checkbox" name="answer" value="1"> HTML</label><br>
+            <label><input type="checkbox" name="answer" value="2"> CSS</label><br>
+            <label><input type="checkbox" name="answer" value="3"> JavaScript</label><br>
+            <label><input type="checkbox" name="answer" value="4"> Python</label><br>
+            <button id="submitMultipleChoice" class="btn-primary">Submit</button>
+        </div>
+
+        <div id="dropdownDialog" title="Dropdown" style="display: none;">
+            <p>Wähle eine Option:</p>
+            <select id="dropdownSelect">
+                <option value="option1">Option 1</option>
+                <option value="option2">Option 2</option>
+                <option value="option3">Option 3</option>
+            </select>
+            <button id="submitDropdown" class="btn-primary">Submit</button>
+        </div>
+
+        <div id="dragDropDialog" title="Drag & Drop" style="display: none;">
+            <p class="drop-sentence">
+                Der <span class="droppable"></span>
+                <span class="droppable"></span> auf der Straße.
+            </p>
+            <div class="card-container">
+                <span class="draggable">Elefant</span>
+                <span class="draggable">tanzt</span>
+            </div>
+        </div>
+
+        <div id="freeTextDialog" title="Freitext" style="display: none;">
+            <p>Was ist deine Lieblingsprogrammiersprache und warum?</p>
+            <textarea id="freeTextInput" rows="4" cols="50"></textarea><br>
+            <button id="submitFreeText" class="btn-primary">Submit</button>
+        </div>
+
+        <div id="rateQuestionDialog" title="Fragen bewerten" style="display: none;">
+            <h3>Wofür steht HTML?</h3>
+            <ul>
+                <li>HyperText Markup Language</li>
+                <li>Home Tool Markup Language</li>
+                <li>Hyperlinks and Text Markup Language</li>
+                <li>Hyper Tool Markup Language</li>
+            </ul>
+            <button id="upvoteBtn">Upvote</button>
+            <button id="downvoteBtn">Downvote</button>
         </div>
     </div>
 </body>
